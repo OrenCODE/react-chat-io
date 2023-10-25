@@ -1,9 +1,10 @@
-import {RootState} from "../../store";
 import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {useLoginMutation} from "../../store/endpoints/authEndpoints.ts";
-import {clearErrors, setCredentials, setErrors} from "../../store/slices/authSlice.ts";
+import {useDispatch} from "react-redux";
+import {useLoginMutation} from "../store/endpoints/authEndpoints.ts";
+import {clearErrors, setCredentials, setErrors} from "../store/slices/authSlice.ts";
+import {useAppSelector} from "../hooks/useAppSelector.ts";
+import "./styles/LoginScreen.css";
 
 const LoginScreen = () => {
 
@@ -11,20 +12,21 @@ const LoginScreen = () => {
     const dispatch = useDispatch();
 
     const [login] = useLoginMutation();
-    const authError = useSelector((state: RootState) => state.auth.authError);
+    const authError = useAppSelector(state => state.auth.authError);
+    const userInfo = useAppSelector(state => state.auth.userInfo);
 
     const [formData, setFormData] = useState({email: "", password: ""});
     const {email, password} = formData;
 
     useEffect(() => {
         dispatch(clearErrors());
-    }, []);
+        if (userInfo) navigate("/chat");
+    }, [userInfo]);
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setFormData({
         ...formData,
         [e.target.name]: e.target.value
     });
-
 
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -51,12 +53,11 @@ const LoginScreen = () => {
     };
 
     return (
-        <div className="auth-wrapper">
+        <div className="login-page">
             <div className="auth-inner">
                 <form onSubmit={onSubmit}>
-                    <h3>Sign In</h3>
-                    <div className="mb-3">
-                        <label>Email</label>
+                    <h1>Sign In</h1>
+                    <div className="mb-4">
                         <input
                             required
                             value={email}
@@ -67,8 +68,7 @@ const LoginScreen = () => {
                             onChange={onChange}
                         />
                     </div>
-                    <div className="mb-3">
-                        <label>Password</label>
+                    <div className="mb-4">
                         <input
                             required
                             value={password}

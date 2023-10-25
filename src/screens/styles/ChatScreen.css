@@ -1,0 +1,89 @@
+.chat-page {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.chat-app {
+    width: auto;
+    min-width: 800px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 0 auto;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.message-feed {
+    flex: 1;
+    overflow-y: auto;
+    max-width: 50%;
+}
+
+.message-wrapper {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.message {
+    margin: 4px;
+    padding: 8px;
+    border-radius: 8px;
+    max-width: 70%;
+}
+
+.user {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: #fff;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    display: block;
+}
+
+.remoteUser {
+    align-self: flex-start;
+    background-color: #e0e0e0;
+}
+
+.message-input {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+}
+
+input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}

@@ -1,8 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {getUserInfoFromStorage, initialErrors, ValidationErrors} from "../../utils/sliceHelpers.ts";
+import {getUserInfoFromStorage, initialErrors, UserInfo, ValidationErrors} from "../../utils/sliceHelpers.ts";
 
 type AuthState = {
-    userInfo: string | null;
+    userInfo: UserInfo | null;
     authError: string | null;
     validationErrors: ValidationErrors;
 }

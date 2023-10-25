@@ -1,9 +1,10 @@
 import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {useSignupMutation} from "../../store/endpoints/authEndpoints.ts";
-import {clearErrors, setCredentials, setErrors} from "../../store/slices/authSlice.ts";
-import {RootState} from "../../store";
+import {useDispatch} from "react-redux";
+import {useAppSelector} from "../hooks/useAppSelector.ts";
+import {useSignupMutation} from "../store/endpoints/authEndpoints.ts";
+import {clearErrors, setCredentials, setErrors} from "../store/slices/authSlice.ts";
+import "./styles/RegisterScreen.css"
 
 const RegisterScreen = () => {
 
@@ -11,15 +12,17 @@ const RegisterScreen = () => {
     const dispatch = useDispatch();
 
     const [signup] = useSignupMutation();
-    const authError = useSelector((state: RootState) => state.auth.authError);
-    const validationErrors = useSelector((state: RootState) => state.auth.validationErrors);
+    const authError = useAppSelector(state => state.auth.authError);
+    const userInfo = useAppSelector(state => state.auth.userInfo);
+    const validationErrors = useAppSelector(state => state.auth.validationErrors);
 
     const [formData, setFormData] = useState({firstName: "", lastName: "", email: "", password: ""});
     const {firstName, lastName, email, password} = formData;
 
     useEffect(() => {
+        if (userInfo) navigate("/chat");
         dispatch(clearErrors());
-    }, []);
+    }, [userInfo]);
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setFormData({
         ...formData,
@@ -54,13 +57,11 @@ const RegisterScreen = () => {
     }
 
     return (
-        <div className="auth-wrapper">
+        <div className="register-page">
             <div className="auth-inner">
                 <form onSubmit={onSubmit}>
-                    <h3>Sign Up</h3>
-
-                    <div className="mb-3">
-                        <label>First name</label>
+                    <h1 className="form-title">Sign Up</h1>
+                    <div className="mb-4">
                         <input
                             required
                             value={firstName}
@@ -72,8 +73,7 @@ const RegisterScreen = () => {
                         />
                         {inputError(validationErrors?.name)}
                     </div>
-                    <div className="mb-3">
-                        <label>Last name</label>
+                    <div className="mb-4">
                         <input
                             required
                             value={lastName}
@@ -84,8 +84,7 @@ const RegisterScreen = () => {
                             onChange={onChange}
                         />
                     </div>
-                    <div className="mb-3">
-                        <label>Email</label>
+                    <div className="mb-4">
                         <input
                             required
                             value={email}
@@ -97,8 +96,7 @@ const RegisterScreen = () => {
                         />
                         {inputError(validationErrors?.email)}
                     </div>
-                    <div className="mb-3">
-                        <label>Password</label>
+                    <div className="mb-4">
                         <input
                             required
                             value={password}
@@ -116,7 +114,7 @@ const RegisterScreen = () => {
                         </button>
                     </div>
                     <p className="login-link">
-                        Already registered <a href="/">sign in?</a>
+                        Already registered <a href="/login">sign in?</a>
                     </p>
                     {renderRegisterError()}
                 </form>

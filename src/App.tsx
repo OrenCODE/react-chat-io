@@ -1,15 +1,18 @@
 import {Outlet} from "react-router-dom";
-import Navbar from "./components/Navbar.tsx"
-import './App.css'
+import Navbar from "./components/Navbar.tsx";
+import './App.css';
 
 const App = () => {
-
     return (
         <>
-            <Navbar/>
-            <Outlet/>
+            <div className="header">
+                <Navbar/>
+            </div>
+            <div className="outlet">
+                <Outlet/>
+            </div>
         </>
-    )
+    );
 }
 
-export default App
+export default App;
