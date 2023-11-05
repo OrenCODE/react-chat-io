@@ -1,14 +1,14 @@
-import { FormEvent, useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { useAppSelector } from '../hooks/useAppSelector.ts';
-import Avatar from '../components/Avatar.tsx';
+import {FormEvent, useEffect, useState} from 'react';
+import {useAppSelector} from '../hooks/useAppSelector.ts';
+import {io, Socket} from 'socket.io-client';
+import ChatFeed, {Message} from "../components/ChatFeed.tsx";
 import './styles/ChatScreen.css';
+import Avatar from "../components/Avatar.tsx";
 
-interface Message {
-    text: string;
-    senderId: string;
-    senderName: string;
-    timestamp: number;
+type Connections = {
+    socketId: string
+    userId: string
+    name: string
 }
 
 const socket: Socket = io('http://localhost:8080');
@@ -16,8 +16,12 @@ const socket: Socket = io('http://localhost:8080');
 const ChatScreen = () => {
     const userInfo = useAppSelector((state) => state.auth.userInfo);
 
+    const [connectedUsers, setConnectedUsers] = useState<Connections[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
+
     const [inputMessage, setInputMessage] = useState<string>('');
+    const [recording, setRecording] = useState(false);
+    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
 
     useEffect(() => {
         if (userInfo) {
@@ -26,6 +30,7 @@ const ChatScreen = () => {
             const welcomeMessage = 'You have joined the conversation';
             setMessages([
                 {
+                    type: 'text',
                     text: welcomeMessage,
                     senderId: 'system',
                     senderName: 'System',
@@ -39,10 +44,18 @@ const ChatScreen = () => {
         const handleReceiveMessage = (message: Message) => {
             setMessages((prevMessages) => [
                 ...prevMessages,
-                { ...message, timestamp: Date.now() },
+                message,
             ]);
         };
         socket.on('message', handleReceiveMessage);
+
+        socket.on('user connected', (users) => {
+            setConnectedUsers(users);
+        });
+
+        socket.on('user disconnect', (users) => {
+            setConnectedUsers(users);
+        });
 
         return () => {
             socket.off('message', handleReceiveMessage);
@@ -56,6 +69,7 @@ const ChatScreen = () => {
 
         const timestamp = Date.now();
         const newMessage: Message = {
+            type: 'text',
             text: inputMessage,
             senderId: userInfo.id,
             senderName: userInfo.name,
@@ -66,40 +80,49 @@ const ChatScreen = () => {
         setInputMessage('');
     };
 
-    const messageSender = (message: Message) => {
-        if (userInfo) {
-            return message.senderId === userInfo.id ? 'user' : 'remoteUser';
+    const handleRecordVoice = () => {
+        if (!userInfo) return;
+        if (recording) {
+            mediaRecorder?.stop();
+            setRecording(false);
+        } else {
+            navigator.mediaDevices
+                .getUserMedia({audio: true})
+                .then((stream) => {
+                    const recorder = new MediaRecorder(stream);
+                    recorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) {
+                            const timestamp = Date.now();
+                            const newMessage: Message = {
+                                type: 'voice',
+                                voiceData: new Blob([e.data], {type: 'audio/wav'}),
+                                senderId: userInfo.id,
+                                senderName: userInfo.name,
+                                timestamp: timestamp,
+                            };
+                            setMessages((prevMessages) => [...prevMessages, newMessage]);
+                            socket.emit('voiceMessage', e.data);
+                        }
+                    };
+                    recorder.onstop = () => {
+                        stream.getTracks().forEach((track) => track.stop());
+                    };
+                    recorder.start();
+                    setMediaRecorder(recorder);
+                    setRecording(true);
+                })
+                .catch((error) => {
+                    console.error('Error accessing microphone:', error);
+                });
         }
-        return 'remoteUser';
     };
+
+    if (!userInfo) return;
 
     return (
         <div className="chat-page">
             <div className="chat-app">
-                <div className="message-feed">
-                    {messages.map((message, index) => (
-                        <div className="message-wrapper" key={index}>
-                            {message.senderId !== 'system' && (
-                                <>
-                                    <Avatar name={message.senderName} />
-                                    <div className={`message ${messageSender(message)}`}>
-                                        {message.text}
-                                    </div>
-                                </>
-                            )}
-                            {message.senderId === 'system' && (
-                                <div className="welcome-message">
-                                    <span>{message.text}</span>
-                                </div>
-                            )}
-                            {message.senderId !== 'system' && (
-                                <span className="message-timestamp">
-                                    {new Date(message.timestamp).toLocaleTimeString()}
-                                </span>
-                            )}
-                        </div>
-                    ))}
-                </div>
+                <ChatFeed messages={messages} userInfo={userInfo}/>
                 <form onSubmit={handleSendMessage}>
                     <div className="message-input">
                         <input
@@ -109,8 +132,23 @@ const ChatScreen = () => {
                             placeholder="Type your message..."
                         />
                         <button type="submit">Send</button>
+                        <button type="button" onClick={handleRecordVoice}
+                                className={recording ? 'record-button stop-record' : 'record-button'}>
+                            {recording ? 'Stop' : 'Record'}
+                        </button>
                     </div>
                 </form>
+            </div>
+            <div className="connected-users">
+                <h3 className="connections-title">Connected</h3>
+                <ul>
+                    {connectedUsers.map((connection) => (
+                        <div key={connection.userId} className="connection">
+                            <Avatar name={connection.name}/>
+                            <div key={connection.userId}>{connection.name}</div>
+                        </div>
+                    ))}
+                </ul>
             </div>
         </div>
     );
