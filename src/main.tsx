@@ -27,6 +27,7 @@ const router = createBrowserRouter(
             </Route>
             <Route element={<PrivateRoute allowedRoles={[UserRole.ADMIN]} />}>
                 <Route path="admin" element={<AdminScreen />}>
+                    <Route index element={<UsersTable />} />
                     <Route path="users" element={<UsersTable />} />
                     <Route path="payments" element={<PaymentsTable />} />
                 </Route>

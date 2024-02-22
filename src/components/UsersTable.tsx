@@ -2,7 +2,6 @@ import {useState} from 'react';
 import {useDeleteUserMutation, useGetUsersQuery} from '../store/endpoints/usersEndpoints';
 import {useAppSelector} from "../hooks/useAppSelector.ts";
 import {UserInfo} from "../utils/sliceHelpers.ts";
-import {apiSlice} from "../store/slices/apiSlice.ts";
 
 const UsersTable = () => {
     const {isLoading} = useGetUsersQuery();
@@ -21,8 +20,7 @@ const UsersTable = () => {
         if (window.confirm(`Are you sure you want to delete this user with email: ${userEmail}?`)) {
             await deleteUser(userId).unwrap()
                 .then(() => {
-                    // Invalidate getUsers query to refetch data
-                    apiSlice.util.invalidateTags(['User']);
+                  // Optionally, show success message
                 })
                 .catch((error) => console.error('Delete failed:', error));
         }

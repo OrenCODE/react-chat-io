@@ -32,7 +32,7 @@ const PaymentsTable = () => {
         <div>
             <input
                 type="text"
-                placeholder="Search payments..."
+                placeholder="Search payment..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
