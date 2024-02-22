@@ -4,6 +4,7 @@ import {useDispatch} from "react-redux";
 import {useLoginMutation} from "../store/endpoints/authEndpoints.ts";
 import {clearErrors, setCredentials, setErrors} from "../store/slices/authSlice.ts";
 import {useAppSelector} from "../hooks/useAppSelector.ts";
+import {redirectByRole} from "../utils/redirectByRole.ts";
 import "./styles/LoginScreen.css";
 
 const LoginScreen = () => {
@@ -20,7 +21,7 @@ const LoginScreen = () => {
 
     useEffect(() => {
         dispatch(clearErrors());
-        if (userInfo) navigate("/chat");
+        redirectByRole(userInfo, navigate);
     }, [userInfo]);
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setFormData({
@@ -35,7 +36,7 @@ const LoginScreen = () => {
         try {
             const res = await login(userDetails).unwrap();
             dispatch(setCredentials({...res}));
-            navigate("/chat");
+            redirectByRole(userInfo, navigate);
         } catch (error) {
             dispatch(setErrors(error));
         }
@@ -65,6 +66,7 @@ const LoginScreen = () => {
                             type="email"
                             className="form-control"
                             placeholder="Enter email"
+                            autoComplete="email"
                             onChange={onChange}
                         />
                     </div>
@@ -76,6 +78,7 @@ const LoginScreen = () => {
                             type="password"
                             className="form-control"
                             placeholder="Enter password"
+                            autoComplete="current-password"
                             onChange={onChange}
                         />
                     </div>

@@ -7,7 +7,15 @@ export default defineConfig({
     cors: { origin: '*' },
     proxy: {
       '/auth': {
-        target: 'http://localhost:6000',
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/users': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/payments': {
+        target: 'http://localhost:4000',
         changeOrigin: true,
       },
       '/socket.io': {

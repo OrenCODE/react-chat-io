@@ -2,8 +2,8 @@ import {FormEvent, useEffect, useState} from 'react';
 import {useAppSelector} from '../hooks/useAppSelector.ts';
 import {io, Socket} from 'socket.io-client';
 import ChatFeed, {Message} from "../components/ChatFeed.tsx";
-import './styles/ChatScreen.css';
 import Avatar from "../components/Avatar.tsx";
+import './styles/ChatScreen.css';
 
 type Connections = {
     socketId: string
@@ -20,8 +20,8 @@ const ChatScreen = () => {
     const [messages, setMessages] = useState<Message[]>([]);
 
     const [inputMessage, setInputMessage] = useState<string>('');
-    const [recording, setRecording] = useState(false);
-    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+    // const [recording, setRecording] = useState(false);
+    // const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
 
     useEffect(() => {
         if (userInfo) {
@@ -80,42 +80,42 @@ const ChatScreen = () => {
         setInputMessage('');
     };
 
-    const handleRecordVoice = () => {
-        if (!userInfo) return;
-        if (recording) {
-            mediaRecorder?.stop();
-            setRecording(false);
-        } else {
-            navigator.mediaDevices
-                .getUserMedia({audio: true})
-                .then((stream) => {
-                    const recorder = new MediaRecorder(stream);
-                    recorder.ondataavailable = (e) => {
-                        if (e.data.size > 0) {
-                            const timestamp = Date.now();
-                            const newMessage: Message = {
-                                type: 'voice',
-                                voiceData: new Blob([e.data], {type: 'audio/wav'}),
-                                senderId: userInfo.id,
-                                senderName: userInfo.name,
-                                timestamp: timestamp,
-                            };
-                            setMessages((prevMessages) => [...prevMessages, newMessage]);
-                            socket.emit('voiceMessage', e.data);
-                        }
-                    };
-                    recorder.onstop = () => {
-                        stream.getTracks().forEach((track) => track.stop());
-                    };
-                    recorder.start();
-                    setMediaRecorder(recorder);
-                    setRecording(true);
-                })
-                .catch((error) => {
-                    console.error('Error accessing microphone:', error);
-                });
-        }
-    };
+    // const handleRecordVoice = () => {
+    //     if (!userInfo) return;
+    //     if (recording) {
+    //         mediaRecorder?.stop();
+    //         setRecording(false);
+    //     } else {
+    //         navigator.mediaDevices
+    //             .getUserMedia({audio: true})
+    //             .then((stream) => {
+    //                 const recorder = new MediaRecorder(stream);
+    //                 recorder.ondataavailable = (e) => {
+    //                     if (e.data.size > 0) {
+    //                         const timestamp = Date.now();
+    //                         const newMessage: Message = {
+    //                             type: 'voice',
+    //                             voiceData: new Blob([e.data], {type: 'audio/wav'}),
+    //                             senderId: userInfo.id,
+    //                             senderName: userInfo.name,
+    //                             timestamp: timestamp,
+    //                         };
+    //                         setMessages((prevMessages) => [...prevMessages, newMessage]);
+    //                         socket.emit('voiceMessage', e.data);
+    //                     }
+    //                 };
+    //                 recorder.onstop = () => {
+    //                     stream.getTracks().forEach((track) => track.stop());
+    //                 };
+    //                 recorder.start();
+    //                 setMediaRecorder(recorder);
+    //                 setRecording(true);
+    //             })
+    //             .catch((error) => {
+    //                 console.error('Error accessing microphone:', error);
+    //             });
+    //     }
+    // };
 
     if (!userInfo) return;
 
@@ -132,10 +132,10 @@ const ChatScreen = () => {
                             placeholder="Type your message..."
                         />
                         <button type="submit">Send</button>
-                        <button type="button" onClick={handleRecordVoice}
-                                className={recording ? 'record-button stop-record' : 'record-button'}>
-                            {recording ? 'Stop' : 'Record'}
-                        </button>
+                        {/*<button type="button" onClick={handleRecordVoice}*/}
+                        {/*        className={recording ? 'record-button stop-record' : 'record-button'}>*/}
+                        {/*    {recording ? 'Stop' : 'Record'}*/}
+                        {/*</button>*/}
                     </div>
                 </form>
             </div>

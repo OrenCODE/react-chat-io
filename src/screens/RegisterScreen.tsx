@@ -42,8 +42,9 @@ const RegisterScreen = () => {
         }
     }
 
-    const inputError = (error: string) => {
+    const inputError = (error: string | undefined) => {
         if (error) return <span className="validation-error">{error}</span>
+        return null
     }
 
     const renderRegisterError = () => {
@@ -54,6 +55,7 @@ const RegisterScreen = () => {
                 </div>
             );
         }
+        return null
     }
 
     return (
@@ -69,6 +71,7 @@ const RegisterScreen = () => {
                             type="text"
                             className="form-control"
                             placeholder="First name"
+                            autoComplete="given-name"
                             onChange={onChange}
                         />
                         {inputError(validationErrors?.name)}
@@ -81,6 +84,7 @@ const RegisterScreen = () => {
                             type="text"
                             className="form-control"
                             placeholder="Last name"
+                            autoComplete="family-name"
                             onChange={onChange}
                         />
                     </div>
@@ -92,6 +96,7 @@ const RegisterScreen = () => {
                             type="email"
                             className="form-control"
                             placeholder="Enter email"
+                            autoComplete="email"
                             onChange={onChange}
                         />
                         {inputError(validationErrors?.email)}
@@ -104,6 +109,7 @@ const RegisterScreen = () => {
                             type="password"
                             className="form-control"
                             placeholder="Enter password"
+                            autoComplete="current-password"
                             onChange={onChange}
                         />
                         {inputError(validationErrors?.password)}

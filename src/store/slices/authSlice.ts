@@ -1,10 +1,16 @@
-import {createSlice} from '@reduxjs/toolkit'
-import {getUserInfoFromStorage, initialErrors, UserInfo, ValidationErrors} from "../../utils/sliceHelpers.ts";
+import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {
+    getUserInfoFromStorage,
+    handleAuthErrors,
+    initialErrors,
+    UserInfo,
+    ValidationErrors
+} from "../../utils/sliceHelpers.ts";
 
-type AuthState = {
+export type AuthState = {
     userInfo: UserInfo | null;
     authError: string | null;
-    validationErrors: ValidationErrors;
+    validationErrors: ValidationErrors | null;
 }
 
 const initialState: AuthState = {
@@ -17,7 +23,7 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setCredentials: (state, action) => {
+        setCredentials: (state, action: PayloadAction<{ data: UserInfo }>) => {
             state.userInfo = action.payload.data
             localStorage.setItem('userInfo', JSON.stringify(action.payload.data))
         },
@@ -27,14 +33,7 @@ const authSlice = createSlice({
 
         },
         setErrors: (state, action) => {
-
-            const authError = action.payload.data?.error;
-            const isAuthError = authError && typeof authError === 'string';
-            state.authError = isAuthError ? authError : null;
-
-            const validationErrors = action.payload.data?.errors;
-            const isValidationError = validationErrors && Object.keys(validationErrors).length > 0;
-            state.validationErrors = isValidationError ? validationErrors : null;
+            handleAuthErrors(state, action);
         },
         clearErrors: (state) => {
             state.validationErrors = initialErrors;
@@ -43,7 +42,12 @@ const authSlice = createSlice({
     }
 })
 
-export const {setCredentials, removeCredentials, setErrors, clearErrors} = authSlice.actions
+export const {
+    setCredentials,
+    removeCredentials,
+    setErrors,
+    clearErrors
+} = authSlice.actions
 
 export default authSlice.reducer
 
