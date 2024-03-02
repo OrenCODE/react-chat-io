@@ -35,7 +35,7 @@ const authSlice = createSlice({
         setErrors: (state, action) => {
             handleAuthErrors(state, action);
         },
-        clearErrors: (state) => {
+        resetErrors: (state) => {
             state.validationErrors = initialErrors;
             state.authError = null;
         }
@@ -46,7 +46,7 @@ export const {
     setCredentials,
     removeCredentials,
     setErrors,
-    clearErrors
+    resetErrors
 } = authSlice.actions
 
 export default authSlice.reducer

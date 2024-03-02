@@ -31,9 +31,6 @@ body {
     cursor: pointer;
 }
 
-.outlet {
-    height: calc(100vh - 80px)
-}
 
 a:hover {
     text-decoration: underline;

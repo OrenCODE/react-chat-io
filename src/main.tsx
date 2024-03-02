@@ -7,21 +7,22 @@ import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} fr
 
 import App from "./App";
 import HomeScreen from "./screens/HomeScreen.tsx";
-import LoginScreen from "./screens/LoginScreen.tsx";
-import RegisterScreen from "./screens/RegisterScreen.tsx";
+import SignInScreen from "./screens/SignInScreen.tsx";
+import SignupScreen from "./screens/SignupScreen.tsx";
 import PrivateRoute from "./components/PrivateRoute.tsx";
 import ChatScreen from "./screens/ChatScreen.tsx";
 import AdminScreen from "./screens/AdminScreen.tsx";
-import {UserRole} from "./utils/sliceHelpers.ts";
 import UsersTable from "./components/UsersTable.tsx";
 import PaymentsTable from "./components/PaymentsTable.tsx";
+import {UserRole} from "./utils/sliceHelpers.ts";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<App/>}>
             <Route index element={<HomeScreen/>}/>
-            <Route path="login" element={<LoginScreen/>}/>
-            <Route path="register" element={<RegisterScreen/>}/>
+            <Route index path="home" element={<HomeScreen/>}/>
+            <Route path="signin" element={<SignInScreen/>}/>
+            <Route path="signup" element={<SignupScreen/>}/>
             <Route element={<PrivateRoute allowedRoles={[UserRole.ADMIN, UserRole.USER]}/>}>
                 <Route path="chat" element={<ChatScreen/>}/>
             </Route>
