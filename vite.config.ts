@@ -32,7 +32,7 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/payments': {
-        target: 'http://localhost:4000',
+        target: 'http://localhost:4001',
         changeOrigin: true,
       },
       '/socket.io': {

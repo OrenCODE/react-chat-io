@@ -1,4 +1,4 @@
-import { apiSlice } from '../slices/apiSlice.ts'
+import {apiSlice} from '../slices/apiSlice.ts'
 
 const URL = '/auth';
 
@@ -27,4 +27,4 @@ export const authEndpoints = apiSlice.injectEndpoints({
   })
 })
 
-export const { useLoginMutation, useLogoutMutation, useSignupMutation } = authEndpoints;
+export const {useLoginMutation, useLogoutMutation, useSignupMutation} = authEndpoints;

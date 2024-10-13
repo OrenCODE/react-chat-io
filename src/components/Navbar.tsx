@@ -17,76 +17,77 @@ import {AppBarTitleStyles, UserButton, UserButtonIconStyles} from "../screens/st
 const socket: Socket = io('http://localhost:8080');
 
 const Navbar = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const [logout] = useLogoutMutation();
-    const userInfo = useAppSelector(state => state.auth.userInfo);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+  const [logout] = useLogoutMutation();
+  const userInfo = useAppSelector(state => state.auth.userInfo);
+  const [open, setOpenMenu] = useState<boolean>(false);
 
-    const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
+  const handleOpen = () => {
+    setOpenMenu(true)
+  };
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+  const handleClose = () => {
+    setOpenMenu(false);
+  };
 
-    const handleLogout = async () => {
-        try {
-            await logout({}).unwrap();
-            socket.emit('user disconnect', userInfo);
-        } catch (err) {
-            console.error('server logout failed');
-        }
-        dispatch(removeCredentials());
-        navigate('/');
-    };
+  const handleLogout = async () => {
+    setOpenMenu(false);
 
-    return (
-        <Box sx={{flexGrow: 1}}>
-            <AppBar position="sticky">
-                <Toolbar>
-                    <MenuItem to="/home" component={Link} sx={AppBarTitleStyles}>
-                        MY APP
-                    </MenuItem>
-                    {userInfo ? (
-                        <>
-                            <UserButton
-                                endIcon={<AccountCircle style={UserButtonIconStyles}/>}
-                                onClick={handleMenu}
-                                color="inherit">
-                                {userInfo.name}
-                            </UserButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorEl}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={open}
-                                onClose={handleClose}
-                            >
-                                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                            </Menu>
-                        </>
-                    ) : (
-                        <>
-                            <MenuItem component={Link} to="signin">Sign In</MenuItem>
-                            <MenuItem component={Link} to="signup">Sign Up</MenuItem>
-                        </>
-                    )}
-                </Toolbar>
-            </AppBar>
-        </Box>
-    );
+    try {
+      await logout({}).unwrap();
+      socket.emit('user disconnect', userInfo);
+    } catch (err) {
+      console.error('server logout failed');
+    }
+    dispatch(removeCredentials());
+    navigate('/');
+  };
+
+  return (
+    <Box sx={{flexGrow: 1}}>
+      <AppBar position="sticky">
+        <Toolbar>
+          <MenuItem to="/home" component={Link} sx={AppBarTitleStyles}>
+            MY APP
+          </MenuItem>
+          {userInfo ? (
+            <>
+              <UserButton
+                endIcon={<AccountCircle style={UserButtonIconStyles} />}
+                onClick={handleOpen}
+                color="inherit">
+                {userInfo.name}
+              </UserButton>
+              <Menu
+                id="menu-appbar"
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={open}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={() => navigate('/chat')}>Chat</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <>
+              <MenuItem component={Link} to="signin">Sign In</MenuItem>
+              <MenuItem component={Link} to="signup">Sign Up</MenuItem>
+            </>
+          )}
+        </Toolbar>
+      </AppBar>
+    </Box>
+  );
 }
 
 export default Navbar
